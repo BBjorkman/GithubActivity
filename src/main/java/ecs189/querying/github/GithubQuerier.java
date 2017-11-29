@@ -33,7 +33,11 @@ public class GithubQuerier {
             SimpleDateFormat outFormat = new SimpleDateFormat("dd MMM, yyyy");
             Date date = inFormat.parse(creationDate);
             String formatted = outFormat.format(date);
-
+            JSONArray commits=event.getJSONObject("payload").getJSONArray("commits");
+            String[] thing=new String[commits.length()];
+            for(int j=0;j<commits.length();j++) {
+                thing[j]=commits.getJSONObject(j).getString("sha");
+            }
             // Add type of event as header
             sb.append("<h3 class=\"type\">");
             sb.append(type);
@@ -42,6 +46,11 @@ public class GithubQuerier {
             sb.append(" on ");
             sb.append(formatted);
             sb.append("<br />");
+            // Add strings
+            for(int k=0;k<thing.length;k++){
+                sb.append("Commit "+(k+1)+": "+thing[k]);
+                sb.append("<br />");
+            }
             // Add collapsible JSON textbox (don't worry about this for the homework; it's just a nice CSS thing I like)
             sb.append("<a data-toggle=\"collapse\" href=\"#event-" + i + "\">JSON</a>");
             sb.append("<div id=event-" + i + " class=\"collapse\" style=\"height: auto;\"> <pre>");
@@ -59,9 +68,18 @@ public class GithubQuerier {
         JSONObject json = Util.queryAPI(new URL(url));
         System.out.println(json);
         JSONArray events = json.getJSONArray("root");
-        for (int i = 0; i < events.length() && i < 10; i++) {
-            eventList.add(events.getJSONObject(i));
+        int pushcount=0, eventcount=0;
+        while (pushcount<10&&eventcount<events.length()) {
+            JSONObject j=events.getJSONObject((eventcount));
+            if(j.getString("type").equals("PushEvent")){
+                eventList.add(j);
+                pushcount++;
+            }
+            eventcount++;
         }
+      /*  for (int i = 0; i < events.length() && i < 10; i++) {
+            eventList.add(events.getJSONObject(i));
+        }*/
         return eventList;
     }
 }

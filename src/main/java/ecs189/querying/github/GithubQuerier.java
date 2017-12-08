@@ -23,6 +23,11 @@ public class GithubQuerier {
         List<JSONObject> response = getEvents(user);
         StringBuilder sb = new StringBuilder();
         sb.append("<div>");
+        b.append("<style>");
+        sb.append("body {background-color: rgb(97, 250, 255);}");
+        sb.append("h3 {background-color: rgb(97, 250, 255);}");
+        sb.append("</style>");
+        sb.append("</head>");
         for (int i = 0; i < response.size(); i++) {
             JSONObject event = response.get(i);
             // Get event type
